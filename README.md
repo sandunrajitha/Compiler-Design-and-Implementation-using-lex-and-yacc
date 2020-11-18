@@ -23,28 +23,33 @@ There are 6 phases in a compiler. Each of these phases help in converting the hi
 
 ![](images/1.png)
 
-**Lexical analyzer:** Reads the source code and converts it to tokens. Tokens are defined by regular expressions. Which are understood by the lexical analyzer. And the analyzer also removes the comments in the code and whitespaces.
+**Lexical analyzer:** 
+Reads the source code and converts it to tokens. Tokens are defined by regular expressions. Which are understood by the lexical analyzer. And the analyzer also removes the comments in the code and whitespaces.
 
-**Syntax analyzer:** this is also known as the parser. It reads the tokens one by one and uses context free grammar to construct the parse tree.
+**Syntax analyzer:** 
+This is also known as the parser. It reads the tokens one by one and uses context free grammar to construct the parse tree.
 
-**Semantic analyzer:** verifies the parse tree, and does - type checking, Label checking and Flow control checking.
+**Semantic analyzer:** 
+Verifies the parse tree, and does - type checking, Label checking and Flow control checking.
 
-**Intermediate Code Generator:** Generates intermediate code which can be executed by the machine. Till the intermediate code it&#39;s the same for every compiler. But Intermediate code generator and steps after that depends on the platform the code is compiled for.
+**Intermediate Code Generator:** 
+Generates intermediate code which can be executed by the machine. Till the intermediate code it&#39;s the same for every compiler. But Intermediate code generator and steps after that depends on the platform the code is compiled for.
 
-**Code optimizer:** transforms the intermediate code in a manner that it uses fewer resources and runs faster. But the meaning of the code is not altered. And there are two types of optimization, machine dependent and machine independent.
+**Code optimizer:** 
+Transforms the intermediate code in a manner that it uses fewer resources and runs faster. But the meaning of the code is not altered. And there are two types of optimization, machine dependent and machine independent.
 
-**Target code generator:** This is the final step of the compilation process. It rewrites the optimized code into machine language.
+**Target code generator:** 
+This is the final step of the compilation process. It rewrites the optimized code into machine language.
 
 
-### **What is the Symbol table**
-
+**What is the Symbol table?**
 Symbol table is a data structure maintained and being used by the compiler which contains all the identifier names with their symbols. It helps the compiler to find the identifiers quickly.
 
 # **Design**
 
 ## **Architecture**
 
-The language supports control structures and variable declarations. And it supports integer, boolean variable types. Boolen expressions only appear in control structures. The language supports arithmetic operations (addition, subtraction, multiplication, division) on integers and has IF-THEN-ELSE, IF-THEN and WHILE-DO control structures.
+The language supports **control structures** and **variable declarations**. And it supports **integer** , **boolean** variable types. Boolen expressions only appear in control structures. The language supports arithmetic operations **(addition, subtraction, multiplication, division)** on integers and has <code> IF-THEN-ELSE, IF-THEN </code> and <code> WHILE-DO </code> control structures.
 
 ![](images/2.png)
 
@@ -56,8 +61,54 @@ The language supports control structures and variable declarations. And it suppo
 
 ## **Grammar**
 
-![](images/grammar.png)
+<!--- ![](images/grammar.png) --->
+```
+G =  { N , T , P , S }
 
+N =  { prgmbody, stmntlist, stmnt, explist, expitem, boolreln}
+
+T =  { PRINT, IF,THEN, ELSE, WHILE, DO, AND, OR, PLUS, MINUS, MULTI, OVER, SEMI, 
+       LESS, BIGGER, EQUAL, LAPREN, RPAREN, ASSIGN, LESSEQ, BIGEQ }
+
+S =  { prgmbody }
+
+P =  {
+       prgmbody →     stmntlist
+
+       stmntlist →    stmnt-list stmnt
+
+       stmnt →        START explist END 
+                    | PRINT expitem SEMI
+                    | WHILE expitem DO stmnt 
+                    | IF expitem THEN stmnt
+                    | IF expitem THEN stmnt ELSE stmnt
+                    | VARIABLE ASSIGN expitem SEMI 
+
+       explist →      expitem 
+                    | explist SEMI expitem
+
+       expitem →      NUMBER                              
+                    | expitem PLUS expitem                
+                    | expitem MINUS expitem               
+                    | expitem MULTI expitem               
+                    | expitem OVER expitem                
+                    | FALSE                               
+                    | TRUE                                
+                    | VARIABLE                            
+                    | boolreln
+                    | LAPREN expitem RPAREN               
+                    | expitem OR expitem
+                    | expitem AND expitem
+                    | NOT expitem
+
+      boolreln →      expitem LESS expitem                
+                    | expitem LESSEQ expitem          
+                    | expitem EQUAL expitem
+                    | expitem BIGEQ expitem
+                    | expitem BIGGER expitem
+
+  }
+```
 ## **NDFA and DFA**
 
 When we consider the sample statement
