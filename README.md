@@ -1,4 +1,4 @@
-# **Compiler – Design and Implementation using lex and yacc **
+# **Compiler – Design and Implementation using lex and yacc**
 
 > Created as a mini project for "Software Construction" course @ Open University of Sri Lanka
 
