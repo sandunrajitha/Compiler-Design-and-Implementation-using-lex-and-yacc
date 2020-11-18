@@ -62,10 +62,9 @@ The language supports control structures and variable declarations. And it suppo
 
 When we consider the sample statement
 
-```
-**IF** (bool-exp)\* **THEN** (stmnt)+ **ELSE** (stmnt)+;
 
-```
+<code>**IF** (bool-exp)<sup>*</sup> **THEN** (stmnt)<sup>+</sup> **ELSE** (stmnt)<sup>+</sup>;</code>
+
 
 ![](images/ndfa.png)
 
@@ -74,10 +73,8 @@ When we consider the sample statement
 
 Sample code:
 
-```
-**if** 4\&lt;5 **then** y:=5; **else** y:=6;
+<code>**if** 4 < 5 **then** y:=5; **else** y:=6;</code>
 
-```
 
 ![](images/derivation.png)
 
@@ -85,7 +82,7 @@ Sample code:
 
 ## **Lexical Analyser**
 
-```
+```Yacc
 
 %{
   #include <stdlib.h>
@@ -107,8 +104,8 @@ Sample code:
 "and"           return AND;
 "or"            return OR;
 "true"          {yylval.bValue = 1; return TRUE;};
-"false"          {yylval.bValue = 0; return FALSE;};
-[1-9][0-9]*   {yylval.iValue = atoi(yytext); return NUMBER;};
+"false"         {yylval.bValue = 0; return FALSE;};
+[1-9][0-9]*     {yylval.iValue = atoi(yytext); return NUMBER;};
 "+"             return PLUS;
 "-"             return MINUS;
 "*"             return MULTI;
@@ -137,7 +134,7 @@ int yywrap(void) {
 
 ## **Syntax Analyser**
 
-```
+```Yacc
 
 %{
 #include <stdio.h>
@@ -161,7 +158,7 @@ int sym[26];
 
 %union {
     int iValue;                 /* integer value */
-    int  bValue;                  /* boolean value */
+    int  bValue;                /* boolean value */
     char sIndex;                /* symbol table index */
     nodeType *nPtr;             /* node pointer */
 };
@@ -184,55 +181,53 @@ int sym[26];
 %%
 
 prgmbody      :
-                stmntlist                           { exit(0); }
+                stmntlist                        { exit(0); }
               ;
 
 stmntlist     :
-                stmntlist stmnt                     { ex($2); freeNode($2); }
+                stmntlist stmnt                  { ex($2); freeNode($2); }
               | /* NULL */
               ;
 
 stmnt         :
-              PRINT expitem SEMI               { $$ = opr(PRINT, 1, $2); }
+                PRINT expitem SEMI               { $$ = opr(PRINT, 1, $2); }
               | START explist END                { $$ = $2; }
               | WHILE expitem DO stmnt           { $$ = opr(WHILE, 2, $2, $4);}
               | IF expitem THEN stmnt            { $$ = opr(IF, 2, $2, $4); }
               | IF expitem THEN stmnt ELSE stmnt { $$ = opr(IF, 3, $2, $4, $6);}
-              | VARIABLE ASSIGN expitem SEMI  {$$ = opr(ASSIGN, 2, id($1), $3);}
+              | VARIABLE ASSIGN expitem SEMI     {$$ = opr(ASSIGN, 2, id($1), $3);}
               ;
 
 explist       :       
-              expitem                             { $$ = $1; }
-              | explist SEMI expitem               { $$ = opr(SEMI, 2, $1, $3); }
+                expitem                          { $$ = $1; }
+              | explist SEMI expitem             { $$ = opr(SEMI, 2, $1, $3); }
               ;
 
 expitem :       
-              NUMBER                              { $$ = con($1); }
-              | expitem PLUS expitem                { $$ = opr(PLUS, 2, $1, $3); }
-              | expitem MINUS expitem               { $$ = opr(MINUS, 2, $1, $3); }
-              | expitem MULTI expitem               { $$ = opr(MULTI, 2, $1, $3); }
-              | expitem OVER expitem                { $$ = opr(OVER, 2, $1, $3); }
-              | FALSE                               { $$ = boole($1); }
-              | TRUE                                { $$ = boole($1); }
-              | VARIABLE                            { $$ = id($1); }
+                NUMBER                           { $$ = con($1); }
+              | expitem PLUS expitem             { $$ = opr(PLUS, 2, $1, $3); }
+              | expitem MINUS expitem            { $$ = opr(MINUS, 2, $1, $3); }
+              | expitem MULTI expitem            { $$ = opr(MULTI, 2, $1, $3); }
+              | expitem OVER expitem             { $$ = opr(OVER, 2, $1, $3); }
+              | FALSE                            { $$ = boole($1); }
+              | TRUE                             { $$ = boole($1); }
+              | VARIABLE                         { $$ = id($1); }
               | boolreln
-              | LAPREN expitem RPAREN               { $$ = $2; }
+              | LAPREN expitem RPAREN            { $$ = $2; }
               | expitem OR expitem
               | expitem AND expitem
               | NOT expitem
               ;
 
 boolreln :      
-              expitem LESS expitem            { $$ = opr(LESS, 2, $1, $3); }
-              | expitem LESSEQ expitem          { $$ = opr(LESSEQ, 2, $1, $3); }
-              | expitem EQUAL expitem           { $$ = opr(EQUAL, 2, $1, $3); }
-              | expitem BIGEQ expitem           { $$ = opr(BIGEQ, 2, $1, $3); }
-              | expitem BIGGER expitem          { $$ = opr(BIGGER, 2, $1, $3); }
+                expitem LESS expitem             { $$ = opr(LESS, 2, $1, $3); }
+              | expitem LESSEQ expitem           { $$ = opr(LESSEQ, 2, $1, $3); }
+              | expitem EQUAL expitem            { $$ = opr(EQUAL, 2, $1, $3); }
+              | expitem BIGEQ expitem            { $$ = opr(BIGEQ, 2, $1, $3); }
+              | expitem BIGGER expitem           { $$ = opr(BIGGER, 2, $1, $3); }
               ;
 
-
 %%
-
 
 nodeType *con(int value) {
     nodeType *p;
@@ -321,7 +316,7 @@ int main(void) {
 
 ## **Header File**
 
-```
+```Yacc
 
 typedef enum { typeCon, typeId, typeOpr, typeBoolean } nodeEnum;
 
@@ -331,7 +326,7 @@ typedef struct {
 } conNodeType;
 
 typedef struct {
-    int boo;                  /* value of constant */
+    int boo;                    /* value of constant */
 } booNodeType;
 
 /* identifiers */
@@ -343,7 +338,7 @@ typedef struct {
 typedef struct {
     int oper;                   /* operator */
     int nops;                   /* number of operands */
-    struct nodeTypeTag *op[1];    /* operands, extended at runtime */
+    struct nodeTypeTag *op[1];  /* operands, extended at runtime */
 } oprNodeType;
 
 typedef struct nodeTypeTag {
@@ -364,7 +359,7 @@ extern int sym[26];
 
 ## **JavaScript Code Generator**
 
-```
+```Yacc
 
 #include <stdio.h>
 #include "calc.h"
@@ -377,96 +372,98 @@ if (!p) return 0;
 
 switch(p->type) {
     
-case typeCon: printf("%d", p->con.value);
-break;
+        case typeCon:     printf("%d", p->con.value);
+                          break;
 
-    case typeBoolean: printf("%c", p->boole.boo);
-break;
+        case typeBoolean: printf("%c", p->boole.boo);
+                          break;
 
-    case typeId:  printf("var ");
-printf("%c", p->id.i + 'a');
-break;
+        case typeId:      printf("var ");
+                          printf("%c", p->id.i + 'a');
+                          break;
 
-    case typeOpr:
+        
+        case typeOpr:
 
-        switch(p->opr.oper) {
+                          switch(p->opr.oper) {
 
-        case WHILE:     printf("while ("); ex(p->opr.op[0]);
-                        printf(") {"); ex(p->opr.op[1]);
-                        printf(" }");
-                        break;
+                          case WHILE:     printf("while ("); ex(p->opr.op[0]);
+                                          printf(") {"); ex(p->opr.op[1]);
+                                          printf(" }");
+                                          break;
 
-        case IF:        printf("if ("); ex(p->opr.op[0]);
-                        printf(") {"); ex(p->opr.op[1]);
-                        printf(" }");
-                        if (p->opr.nops > 2)
-                            printf("else { "); ex(p->opr.op[2]);
-                            printf(" }");
-                        break;
+                          case IF:        printf("if ("); ex(p->opr.op[0]);
+                                          printf(") {"); ex(p->opr.op[1]);
+                                          printf(" }");
+                                          if (p->opr.nops > 2)
+                                              printf("else { "); ex(p->opr.op[2]);
+                                              printf(" }");
+                                          break;
 
-        case PRINT:     printf("console.log( ");
-                        ex(p->opr.op[0]);
-                        printf(" )");
-                        break;
+                          case PRINT:     printf("console.log( ");
+                                          ex(p->opr.op[0]);
+                                          printf(" )");
+                                          break;
 
-        case SEMI:      ex(p->opr.op[0]);
-                        printf(" ; ");
-                        ex(p->opr.op[1]);
-                        break;
+                          case SEMI:      ex(p->opr.op[0]);
+                                          printf(" ; ");
+                                          ex(p->opr.op[1]);
+                                          break;
 
-        case ASSIGN:    printf("var ");
-                        printf("%c = ", p->opr.op[0]->id.i + 'a');
-                        ex(p->opr.op[1]);
-                        break;
+                          case ASSIGN:    printf("var ");
+                                          printf("%c = ", p->opr.op[0]->id.i + 'a');
+                                          ex(p->opr.op[1]);
+                                          break;
 
-        case PLUS:      ex(p->opr.op[0]);
-                        printf(" + ");
-                        ex(p->opr.op[1]);
-                        break;
+                          case PLUS:      ex(p->opr.op[0]);
+                                          printf(" + ");
+                                          ex(p->opr.op[1]);
+                                          break;
 
-        case MINUS:     ex(p->opr.op[0]);
-                        printf(" - ");
-                        ex(p->opr.op[1]);
-                        break;
+                          case MINUS:     ex(p->opr.op[0]);
+                                          printf(" - ");
+                                          ex(p->opr.op[1]);
+                                          break;
 
-        case MULTI:     ex(p->opr.op[0]);
-                        printf(" * ");
-                        ex(p->opr.op[1]);
-                        break;
+                          case MULTI:     ex(p->opr.op[0]);
+                                          printf(" * ");
+                                          ex(p->opr.op[1]);
+                                          break;
 
-        case OVER:      ex(p->opr.op[0]);
-                        printf(" / ");
-                        ex(p->opr.op[1]);
-                        break;
+                          case OVER:      ex(p->opr.op[0]);
+                                          printf(" / ");
+                                          ex(p->opr.op[1]);
+                                          break;
 
-        case LESS:      ex(p->opr.op[0]);
-                        printf(" < ");
-                        ex(p->opr.op[1]);
-                        break;
+                          case LESS:      ex(p->opr.op[0]);
+                                          printf(" < ");
+                                          ex(p->opr.op[1]);
+                                          break;
 
-        case BIGGER:    ex(p->opr.op[0]);
-                        printf(" < ");
-                        ex(p->opr.op[1]);
-                        break;
+                          case BIGGER:    ex(p->opr.op[0]);
+                                          printf(" < ");
+                                          ex(p->opr.op[1]);
+                                          break;
 
-        case BIGEQ:     ex(p->opr.op[0]);
-                        printf(" >= ");
-                        ex(p->opr.op[1]);
-                        break;
+                          case BIGEQ:     ex(p->opr.op[0]);
+                                          printf(" >= ");
+                                          ex(p->opr.op[1]);
+                                          break;
 
-        case LESSEQ:    ex(p->opr.op[0]);
-                        printf(" <= ");
-                        ex(p->opr.op[1]);
-                        break;
+                          case LESSEQ:    ex(p->opr.op[0]);
+                                          printf(" <= ");
+                                          ex(p->opr.op[1]);
+                                          break;
 
-        /*case NE:        return ex(p->opr.op[0]) != ex(p->opr.op[1]);*/
-        case EQUAL:     ex(p->opr.op[0]);
-                        printf(" === ");
-                        ex(p->opr.op[1]);
-                        break;
-        }
-    }
-    return 0;
+                          /*case NE:      return ex(p->opr.op[0]) != ex(p->opr.op[1]);*/
+
+                          case EQUAL:     ex(p->opr.op[0]);
+                                          printf(" === ");
+                                          ex(p->opr.op[1]);
+                                          break;
+                          }
+  }
+  return 0;
 }
 
 ```
