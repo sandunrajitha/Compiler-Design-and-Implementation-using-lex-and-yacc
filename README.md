@@ -65,7 +65,7 @@ The language supports **control structures** and **variable declarations**. And 
 ```
 G =  { N , T , P , S }
 
-N =  { prgmbody, stmntlist, stmnt, explist, expitem, boolreln}
+N =  { prgmbody, stmntlist, stmnt, explist, expitem, boolreln }
 
 T =  { PRINT, IF,THEN, ELSE, WHILE, DO, AND, OR, PLUS, MINUS, MULTI, OVER, SEMI, 
        LESS, BIGGER, EQUAL, LAPREN, RPAREN, ASSIGN, LESSEQ, BIGEQ }
@@ -144,7 +144,7 @@ Sample code:
 
 %%
 
-[a-z,A-Z]       { yylval.sIndex = *yytext - 'a';  return VARIABLE;};
+[a-z,A-Z]       {yylval.sIndex = *yytext - 'a';  return VARIABLE;};
 "print"         return PRINT;
 "begin"         return START;
 "if"            return IF;
@@ -243,10 +243,10 @@ stmntlist     :
 stmnt         :
                 PRINT expitem SEMI               { $$ = opr(PRINT, 1, $2); }
               | START explist END                { $$ = $2; }
-              | WHILE expitem DO stmnt           { $$ = opr(WHILE, 2, $2, $4);}
+              | WHILE expitem DO stmnt           { $$ = opr(WHILE, 2, $2, $4); }
               | IF expitem THEN stmnt            { $$ = opr(IF, 2, $2, $4); }
-              | IF expitem THEN stmnt ELSE stmnt { $$ = opr(IF, 3, $2, $4, $6);}
-              | VARIABLE ASSIGN expitem SEMI     {$$ = opr(ASSIGN, 2, id($1), $3);}
+              | IF expitem THEN stmnt ELSE stmnt { $$ = opr(IF, 3, $2, $4, $6); }
+              | VARIABLE ASSIGN expitem SEMI     { $$ = opr(ASSIGN, 2, id($1), $3); }
               ;
 
 explist       :       
